@@ -21,7 +21,11 @@ import { getSlackUserName } from '~/utils/users';
 export async function generateResponse(
   context: SlackMessageContext,
   messages: ModelMessage[],
-  requestHints: ChatRequestHints
+  requestHints: ChatRequestHints,
+  opts?: {
+    limitedContextOnly?: boolean;
+    modelKey?: 'chat-model' | 'limited-chat-model';
+  }
 ) {
   const ctxId = getContextId(context);
   const controller = createAbortController(ctxId);
@@ -74,11 +78,12 @@ export async function generateResponse(
       requestHints,
       files,
       stream,
+      modelKey: opts?.modelKey,
     });
 
     const streamResult = await agent.stream({
       messages: [
-        ...messages,
+        ...(opts?.limitedContextOnly ? [] : messages),
         {
           role: 'user',
           content: currentMessageContent,
@@ -134,10 +139,16 @@ export async function generateResponse(
       await closeStream(stream);
     }
     await setStatus(context, { status: 'failed to generate' });
+    const isRateLimited =
+      errorDetails.statusCode === 429 ||
+      errorDetails.code === '429' ||
+      errorDetails.message.includes('429');
     return {
       success: false,
-      error:
-        error instanceof NoOutputGeneratedError
+      rateLimited: isRateLimited || error instanceof NoOutputGeneratedError,
+      error: isRateLimited
+        ? "We're out of credits right now."
+        : error instanceof NoOutputGeneratedError
           ? 'Oops! Gorkie is out of credits right now. Please try again later.'
           : 'Oops! Something went wrong, try again later.',
     };

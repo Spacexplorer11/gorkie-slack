@@ -69,6 +69,7 @@ export const provider = customProvider({
   languageModels: {
     'chat-model': chatModel,
     'summariser-model': summariserModel,
+    'limited-chat-model': openrouter.languageModel('google/gemini-3-flash-preview'),
   },
   imageModels: {
     'image-model': hackclub.imageModel('google/gemini-3.1-flash-image-preview'),

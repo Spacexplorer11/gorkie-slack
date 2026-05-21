@@ -113,14 +113,16 @@ export const orchestratorAgent = ({
   requestHints,
   files,
   stream,
+  modelKey = 'chat-model',
 }: {
   context: SlackMessageContext;
   requestHints: ChatRequestHints;
   files?: SlackFile[];
   stream: Stream;
+  modelKey?: 'chat-model' | 'limited-chat-model';
 }) =>
   new ToolLoopAgent({
-    model: provider.languageModel('chat-model'),
+    model: provider.languageModel(modelKey),
     instructions: systemPrompt({
       agent: 'chat',
       requestHints,
