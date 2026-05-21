@@ -74,7 +74,7 @@ async function handleMessage(
               type: 'section',
               text: {
                 type: 'mrkdwn',
-                text: "We're out of credits right now. If you wish, you can access a limited version of Gorkie by consenting to Google using your data and only having access to this message.",
+                text: "We're out of credits right now. If you wish, you can access a limited version of Gorkie by consenting to Google using your data, where only this ping message is sent to Google and no thread history is shared.",
               },
             },
             {

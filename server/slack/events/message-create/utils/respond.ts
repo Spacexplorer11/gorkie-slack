@@ -145,7 +145,7 @@ export async function generateResponse(
       errorDetails.message.includes('429');
     return {
       success: false,
-      rateLimited: isRateLimited || error instanceof NoOutputGeneratedError,
+      rateLimited: isRateLimited,
       error: isRateLimited
         ? "We're out of credits right now."
         : error instanceof NoOutputGeneratedError
