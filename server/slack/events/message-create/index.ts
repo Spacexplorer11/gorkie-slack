@@ -15,6 +15,7 @@ import {
   toMessageContext,
 } from './utils/message-context';
 import { generateResponse } from './utils/respond';
+import { encodeLimitedFallbackMetadata } from '../../features/limited-fallback/metadata';
 
 export const name = 'message';
 
@@ -63,11 +64,47 @@ async function handleMessage(
     );
 
     if (!result.success && result.error && event.channel) {
-      await messageContext.client.chat.postMessage({
-        channel: event.channel,
-        thread_ts: event.thread_ts ?? event.ts,
-        text: result.error,
-      });
+      if (result.rateLimited && trigger.type === 'ping') {
+        await messageContext.client.chat.postMessage({
+          channel: event.channel,
+          thread_ts: event.thread_ts ?? event.ts,
+          text: 'Out of credits - limited mode available.',
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: "We're out of credits right now. If you wish, you can access a limited version of Gorkie by consenting to Google using your data, where only this ping message is sent to Google and no thread history is shared.",
+              },
+            },
+            {
+              type: 'actions',
+              elements: [
+                {
+                  type: 'button',
+                  text: { type: 'plain_text', text: 'Use limited mode' },
+                  style: 'primary',
+                  action_id: 'limited_fallback_open_consent',
+                  value: encodeLimitedFallbackMetadata({
+                    channel: event.channel,
+                    channelType: event.channel_type,
+                    teamId: messageContext.teamId,
+                    threadTs: event.thread_ts,
+                    ts: event.ts,
+                    user: userId,
+                  }),
+                },
+              ],
+            },
+          ],
+        });
+      } else {
+        await messageContext.client.chat.postMessage({
+          channel: event.channel,
+          thread_ts: event.thread_ts ?? event.ts,
+          text: result.error,
+        });
+      }
     }
 
     if (
