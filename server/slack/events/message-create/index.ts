@@ -68,7 +68,7 @@ async function handleMessage(
         await messageContext.client.chat.postMessage({
           channel: event.channel,
           thread_ts: event.thread_ts ?? event.ts,
-          text: 'Out of credits. Limited mode consent available.',
+          text: 'Out of credits - limited mode available.',
           blocks: [
             {
               type: 'section',

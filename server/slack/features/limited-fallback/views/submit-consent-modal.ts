@@ -55,11 +55,24 @@ export async function execute({
       user: metadata.user,
     },
   };
+  const botJoined = context.botUserId
+    ? await client.users
+        .info({ user: context.botUserId })
+        .then((info) => {
+          const created =
+            (info.user as { created?: number } | undefined)?.created ??
+            info.user?.updated;
+          return typeof created === 'number'
+            ? created * 1000
+            : Date.now();
+        })
+        .catch(() => Date.now())
+    : Date.now();
   const requestHints: ChatRequestHints = {
     channel: 'this channel',
     server: 'this workspace',
     time: getTime(),
-    joined: Date.now(),
+    joined: botJoined,
     status: 'active',
     activity: 'none',
   };

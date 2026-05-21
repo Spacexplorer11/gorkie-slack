@@ -7,7 +7,7 @@ export function buildLimitedFallbackConsentModal(
   metadata: LimitedFallbackMetadata
 ): SlackModalDto {
   return Modal({
-    title: 'Limited Access',
+    title: 'Out of Credits',
     submit: 'I Consent',
     close: 'Cancel',
     callbackId: 'limited_fallback_submit_consent',
