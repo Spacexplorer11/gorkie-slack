@@ -15,7 +15,7 @@ export function buildLimitedFallbackConsentModal(
   })
     .blocks(
       Blocks.Section({
-        text: "*You're out of credits.* If you wish, you can use a limited Gorkie mode powered by Gemini 3 Flash.",
+        text: "*You're out of credits.* If you wish, you can use a limited Gorkie mode powered by Gemini Flash.",
       }),
       Blocks.Section({
         text: 'By continuing, you consent to Google processing only the message that pinged Gorkie in this thread. No other thread history will be sent.',

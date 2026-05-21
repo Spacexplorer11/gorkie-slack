@@ -139,16 +139,15 @@ export async function generateResponse(
       await closeStream(stream);
     }
     await setStatus(context, { status: 'failed to generate' });
-    const isRateLimited =
-      errorDetails.statusCode === 429 ||
-      errorDetails.code === '429';
+    const rateLimitCode = String(errorDetails.statusCode ?? errorDetails.code ?? '');
+    const isRateLimited = rateLimitCode === '429';
     return {
       success: false,
       rateLimited: isRateLimited,
       error: isRateLimited
         ? "We're out of credits right now."
         : error instanceof NoOutputGeneratedError
-          ? 'Oops! Gorkie is out of credits right now. Please try again later.'
+          ? 'Oops! I could not generate a response. Please try again later.'
           : 'Oops! Something went wrong, try again later.',
     };
   } finally {
