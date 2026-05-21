@@ -36,7 +36,7 @@ export async function execute({
     await client.chat.postMessage({
       channel: metadata.channel,
       thread_ts: metadata.threadTs ?? metadata.ts,
-      text: 'I could not read the original ping message for limited mode. Please ping me again.',
+      text: 'I could not read the original ping message (it may have been deleted or is no longer accessible). Please ping me again.',
     });
     return;
   }
@@ -59,11 +59,10 @@ export async function execute({
     ? await client.users
         .info({ user: context.botUserId })
         .then((info) => {
-          const created =
-            (info.user as { created?: number } | undefined)?.created ??
-            info.user?.updated;
-          return typeof created === 'number'
-            ? created * 1000
+          const user = info.user as { created?: number; updated?: number } | undefined;
+          const joinedAt = user?.created ?? user?.updated;
+          return typeof joinedAt === 'number'
+            ? joinedAt * 1000
             : Date.now();
         })
         .catch(() => Date.now())
