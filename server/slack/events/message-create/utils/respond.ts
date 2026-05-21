@@ -141,8 +141,7 @@ export async function generateResponse(
     await setStatus(context, { status: 'failed to generate' });
     const isRateLimited =
       errorDetails.statusCode === 429 ||
-      errorDetails.code === '429' ||
-      errorDetails.message.includes('429');
+      errorDetails.code === '429';
     return {
       success: false,
       rateLimited: isRateLimited,
